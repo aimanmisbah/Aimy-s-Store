@@ -39,13 +39,18 @@ def supermarket_billing():
     quantity = st.number_input("Enter the quantity:", min_value=1)
     price = st.number_input("Enter the price (in PKR):", min_value=0.0)
 
-    if st.button("Add Item"):
+    # Button to insert item
+    if st.button("Insert Item"):
         if item_name and quantity > 0 and price >= 0:
             total_price = quantity * price
             items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
             total_quantity += quantity
             total_amount += total_price
             st.success(f"Added {quantity} of {item_name} at PKR {price} each.")
+            # Clear inputs after insertion
+            item_name = ""
+            quantity = 1  # Reset quantity to default
+            price = 0.0   # Reset price to default
         else:
             st.error("Please fill in all fields correctly.")
 

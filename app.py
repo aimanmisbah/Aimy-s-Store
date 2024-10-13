@@ -34,13 +34,9 @@ def supermarket_billing():
     if 'items' not in st.session_state:
         st.session_state.items = []
 
-    # Check if items are being correctly initialized
-    if not isinstance(st.session_state.items, list):
-        st.session_state.items = []
-
-    # Calculate total quantity and amount safely
-    total_quantity = sum(item['quantity'] for item in st.session_state.items) if st.session_state.items else 0
-    total_amount = sum(item['total_price'] for item in st.session_state.items) if st.session_state.items else 0.0
+    # Calculate total quantity and amount
+    total_quantity = sum(item['quantity'] for item in st.session_state.items)
+    total_amount = sum(item['total_price'] for item in st.session_state.items)
 
     st.title("Aimy's Store")  # Title of the app
     st.subheader("Billing System")

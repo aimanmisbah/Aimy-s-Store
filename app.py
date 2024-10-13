@@ -2,12 +2,12 @@ import streamlit as st
 import datetime
 
 def print_receipt(items, total_quantity, total_amount, received_amount, change, payment_method, bank_account):
-    st.subheader("Aimy's Store")  # Add store heading to the receipt
+    st.subheader("Aimy's Store")  # Store heading on the receipt
     st.subheader("Cash Receipt")
     st.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}    Time: {datetime.datetime.now().strftime('%H:%M:%S')}")
     st.write("-" * 50)
 
-    # Heading for the items table
+    # Table header for items
     st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
     st.write("-" * 50)
 
@@ -22,22 +22,25 @@ def print_receipt(items, total_quantity, total_amount, received_amount, change, 
     st.write(f"Received Amount: PKR {received_amount:.2f}")
     st.write(f"Change: PKR {change:.2f}")
     st.write(f"Payment Method: {payment_method}")
+    
     if payment_method == "Card":
         st.write(f"Bank Account (last 4 digits): **** **** **** {bank_account[-4:]}")
+    
     st.write("=" * 50)
     st.write("Thank you for shopping at Aimy's Store!")
 
 def supermarket_billing():
-    # Initialize session state for items if it doesn't exist
+    # Initialize session state for items if it does not exist
     if 'items' not in st.session_state:
         st.session_state.items = []
 
-    # Ensure items is a list
+    # Check if items are being correctly initialized
     if not isinstance(st.session_state.items, list):
         st.session_state.items = []
 
-    total_quantity = sum(item['quantity'] for item in st.session_state.items)
-    total_amount = sum(item['total_price'] for item in st.session_state.items)
+    # Calculate total quantity and amount safely
+    total_quantity = sum(item['quantity'] for item in st.session_state.items) if st.session_state.items else 0
+    total_amount = sum(item['total_price'] for item in st.session_state.items) if st.session_state.items else 0.0
 
     st.title("Aimy's Store")  # Title of the app
     st.subheader("Billing System")
@@ -52,7 +55,7 @@ def supermarket_billing():
         if item_name and quantity > 0 and price >= 0:
             total_price = quantity * price
             st.session_state.items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
-            st.success(f"Added {quantity} of {item_name} at PKR {price} each.")
+            st.success(f"Added {quantity} of {item_name} at PKR {price:.2f} each.")
         else:
             st.error("Please fill in all fields correctly.")
 

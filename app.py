@@ -22,7 +22,8 @@ def print_receipt(items, total_quantity, total_amount, received_amount, change, 
     st.write(f"Received Amount: PKR {received_amount:.2f}")
     st.write(f"Change: PKR {change:.2f}")
     st.write(f"Payment Method: {payment_method}")
-    st.write(f"Bank Account (last 4 digits): **** **** **** {bank_account[-4:]}")
+    if payment_method == "Card":
+        st.write(f"Bank Account (last 4 digits): **** **** **** {bank_account[-4:]}")
     st.write("=" * 50)
     st.write("Thank you for shopping at Aimy's Store!")
 
@@ -39,21 +40,22 @@ def supermarket_billing():
     quantity = st.number_input("Enter the quantity:", min_value=1)
     price = st.number_input("Enter the price (in PKR):", min_value=0.0)
 
-    # Button to insert item
-    if st.button("Insert Item"):
+    # Button to add item
+    if st.button("Add Item"):
         if item_name and quantity > 0 and price >= 0:
             total_price = quantity * price
             items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
             total_quantity += quantity
             total_amount += total_price
             st.success(f"Added {quantity} of {item_name} at PKR {price} each.")
-            # Clear inputs after insertion
+            # Clear inputs after insertion (optional, can keep for multiple entries)
             item_name = ""
             quantity = 1  # Reset quantity to default
             price = 0.0   # Reset price to default
         else:
             st.error("Please fill in all fields correctly.")
 
+    # Display the current list of items
     if items:
         st.write("-" * 50)
         st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))

@@ -2,7 +2,7 @@ import streamlit as st
 import datetime
 
 def print_receipt(items, total_quantity, total_amount, received_amount, change, payment_method, bank_account):
-    st.subheader("Receipt")
+    st.subheader("Cash Receipt")  # Update the subheader here
     st.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}    Time: {datetime.datetime.now().strftime('%H:%M:%S')}")
     st.write("-" * 40)
     st.write("{:<15} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
@@ -26,21 +26,25 @@ def supermarket_billing():
     total_quantity = 0
     total_amount = 0.0
 
-    st.title("Aimy's Store Billing System")
-    
+    st.title("Aimy's Store")  # Updated title
+    st.subheader("Cash Receipt")  # Initial subheader (if needed)
+
+    item_counter = 0
     while True:
-        item_name = st.text_input("Enter the item name (or type 'done' to finish):")
+        item_name = st.text_input(f"Enter the item name {item_counter + 1} (or type 'done' to finish):", key=f"item_name_{item_counter}")
         if item_name.lower() == 'done':
             break
 
-        quantity = st.number_input(f"Enter the quantity of {item_name}:", min_value=1)
-        price = st.number_input(f"Enter the price of {item_name} (in PKR):", min_value=0.0)
+        quantity = st.number_input(f"Enter the quantity of {item_name}:", min_value=1, key=f"quantity_{item_counter}")
+        price = st.number_input(f"Enter the price of {item_name} (in PKR):", min_value=0.0, key=f"price_{item_counter}")
 
         total_price = quantity * price
         items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
 
         total_quantity += quantity
         total_amount += total_price
+
+        item_counter += 1
 
     st.write(f"\nTotal Amount: PKR {total_amount:.2f}")
 

@@ -32,6 +32,10 @@ def supermarket_billing():
     if 'items' not in st.session_state:
         st.session_state.items = []
 
+    # Ensure items is a list
+    if not isinstance(st.session_state.items, list):
+        st.session_state.items = []
+
     total_quantity = sum(item['quantity'] for item in st.session_state.items)
     total_amount = sum(item['total_price'] for item in st.session_state.items)
 

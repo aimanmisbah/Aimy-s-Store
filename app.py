@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd  # Import pandas here
 
 # Function to display and manage the billing system
 def supermarket_billing():
@@ -29,7 +30,7 @@ def supermarket_billing():
     # Display the added items in a table
     if st.session_state.items:
         st.subheader("Items in Cart:")
-        items_df = pd.DataFrame(st.session_state.items)
+        items_df = pd.DataFrame(st.session_state.items)  # Now this should work
         st.write(items_df)
 
         # Calculate total quantity and amount

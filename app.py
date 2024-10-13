@@ -30,7 +30,8 @@ def supermarket_billing():
     # Display the added items in a table
     if st.session_state.items:
         st.subheader("Items in Cart:")
-        items_df = pd.DataFrame(st.session_state.items)  # Now this should work
+        # Create a DataFrame only if there are items
+        items_df = pd.DataFrame(st.session_state.items) if st.session_state.items else pd.DataFrame(columns=["name", "quantity", "total_price"])
         st.write(items_df)
 
         # Calculate total quantity and amount

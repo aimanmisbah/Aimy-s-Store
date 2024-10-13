@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import datetime
 
 # Function to display and manage the billing system
 def supermarket_billing():
@@ -53,13 +52,17 @@ def print_receipt(items, total_quantity, total_amount):
     st.write("Cash Receipt")
     st.write("─" * 30)  # Line separator
 
-    # Display items in a formatted way
+    # Display items in a clear format
     for item in items:
-        st.write(f"{item['name']:20} | Quantity: {item['quantity']:5} | Total Price: ${item['total_price']:.2f}")
+        st.write(f"Item Name: {item['name']}")
+        st.write(f"Quantity: {item['quantity']}")
+        st.write(f"Total Price: ${item['total_price']:.2f}")
+        st.write("─" * 30)  # Line separator for each item
     
-    st.write("─" * 30)  # Another line separator
-    st.write(f"{'Total Quantity:':<20} {total_quantity:>5}")
-    st.write(f"{'Total Amount:':<20} ${total_amount:.2f}")
+    # Display total quantity and amount
+    st.write(f"Total Quantity: {total_quantity}")
+    st.write(f"Total Amount: ${total_amount:.2f}")
+    st.write("─" * 30)  # Final line separator
 
 # Call the billing function
 supermarket_billing()

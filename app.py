@@ -6,7 +6,7 @@ def print_receipt(items, total_quantity, total_amount, received_amount, change, 
     st.subheader("Cash Receipt")
     st.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}    Time: {datetime.datetime.now().strftime('%H:%M:%S')}")
     st.write("-" * 50)
-    
+
     # Heading for the items table
     st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
     st.write("-" * 50)
@@ -28,9 +28,12 @@ def print_receipt(items, total_quantity, total_amount, received_amount, change, 
     st.write("Thank you for shopping at Aimy's Store!")
 
 def supermarket_billing():
-    items = []
-    total_quantity = 0
-    total_amount = 0.0
+    # Initialize session state for items if it doesn't exist
+    if 'items' not in st.session_state:
+        st.session_state.items = []
+
+    total_quantity = sum(item['quantity'] for item in st.session_state.items)
+    total_amount = sum(item['total_price'] for item in st.session_state.items)
 
     st.title("Aimy's Store")  # Title of the app
     st.subheader("Billing System")
@@ -44,23 +47,17 @@ def supermarket_billing():
     if st.button("Add Item"):
         if item_name and quantity > 0 and price >= 0:
             total_price = quantity * price
-            items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
-            total_quantity += quantity
-            total_amount += total_price
+            st.session_state.items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
             st.success(f"Added {quantity} of {item_name} at PKR {price} each.")
-            # Clear inputs after insertion (optional, can keep for multiple entries)
-            item_name = ""
-            quantity = 1  # Reset quantity to default
-            price = 0.0   # Reset price to default
         else:
             st.error("Please fill in all fields correctly.")
 
     # Display the current list of items
-    if items:
+    if st.session_state.items:
         st.write("-" * 50)
         st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
         st.write("-" * 50)
-        for item in items:
+        for item in st.session_state.items:
             st.write("{:<20} {:<10} {:<10}".format(item['name'], item['quantity'], item['total_price']))
 
         st.write("-" * 50)
@@ -82,7 +79,7 @@ def supermarket_billing():
         if payment_method == "Cash" and received_amount < total_amount:
             st.error("Amount received is less than the total amount.")
         else:
-            print_receipt(items, total_quantity, total_amount, received_amount, change, payment_method, bank_account)
+            print_receipt(st.session_state.items, total_quantity, total_amount, received_amount, change, payment_method, bank_account)
 
 # Call the billing function
 supermarket_billing()

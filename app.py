@@ -1,90 +1,58 @@
 import streamlit as st
-import datetime
 
-# Function to print the receipt
-def print_receipt(items, total_quantity, total_amount, received_amount, change, payment_method, bank_account):
-    st.subheader("Aimy's Store")  # Store heading on the receipt
-    st.subheader("Cash Receipt")
-    st.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}    Time: {datetime.datetime.now().strftime('%H:%M:%S')}")
-    st.write("-" * 50)
-
-    # Table header for items
-    st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
-    st.write("-" * 50)
-
-    # Display each item
-    for item in items:
-        st.write("{:<20} {:<10} {:<10}".format(item['name'], item['quantity'], item['total_price']))
-
-    st.write("-" * 50)
-    st.write(f"Total Quantity: {total_quantity}")
-    st.write("")  # Line gap
-    st.write(f"Net Amount: PKR {total_amount:.2f}")
-    st.write(f"Received Amount: PKR {received_amount:.2f}")
-    st.write(f"Change: PKR {change:.2f}")
-    st.write(f"Payment Method: {payment_method}")
-    
-    if payment_method == "Card":
-        st.write(f"Bank Account (last 4 digits): **** **** **** {bank_account[-4:]}")
-    
-    st.write("=" * 50)
-    st.write("Thank you for shopping at Aimy's Store!")
-
-# Main function for supermarket billing
+# Function to display and manage the billing system
 def supermarket_billing():
-    # Initialize session state for items if it does not exist
+    # Initialize the session state for items if not already done
     if 'items' not in st.session_state:
-        st.session_state.items = []  # Initialize as empty list
+        st.session_state.items = []
 
-    st.title("Aimy's Store")  # Title of the app
+    st.title("Aimy's Store")
     st.subheader("Billing System")
 
     # Input fields for item name, quantity, and price
     item_name = st.text_input("Enter the item name:")
-    quantity = st.number_input("Enter the quantity:", min_value=1)
-    price = st.number_input("Enter the price (in PKR):", min_value=0.0)
+    quantity = st.number_input("Enter the quantity:", min_value=1, value=1)
+    price_per_item = st.number_input("Enter the price per item:", min_value=0.0, value=0.0)
 
-    # Button to add item
+    # Add item button
     if st.button("Add Item"):
-        if item_name and quantity > 0 and price >= 0:
-            total_price = quantity * price
-            st.session_state.items.append({'name': item_name, 'quantity': quantity, 'total_price': total_price})
-            st.success(f"Added {quantity} of {item_name} at PKR {price:.2f} each.")
-        else:
-            st.error("Please fill in all fields correctly.")
+        if item_name:
+            total_price = quantity * price_per_item
+            # Add item to session state
+            st.session_state.items.append({
+                'name': item_name,
+                'quantity': quantity,
+                'total_price': total_price
+            })
+            st.success(f"Added {quantity} x {item_name} to the bill.")
 
-    # Display the current list of items
+    # Display the added items in a table
     if st.session_state.items:
-        st.write("-" * 50)
-        st.write("{:<20} {:<10} {:<10}".format('Item', 'Qty', 'Price (PKR)'))
-        st.write("-" * 50)
-        for item in st.session_state.items:
-            st.write("{:<20} {:<10} {:<10}".format(item['name'], item['quantity'], item['total_price']))
+        st.subheader("Items in Cart:")
+        items_df = pd.DataFrame(st.session_state.items)
+        st.write(items_df)
 
-        # Calculate total quantity and amount safely
-        total_quantity = sum(item.get('quantity', 0) for item in st.session_state.items)
-        total_amount = sum(item.get('total_price', 0) for item in st.session_state.items)
+        # Calculate total quantity and amount
+        total_quantity = sum(item['quantity'] for item in st.session_state.items)
+        total_amount = sum(item['total_price'] for item in st.session_state.items)
 
-        st.write("-" * 50)
-        st.write(f"Total Amount: PKR {total_amount:.2f}")
+        # Display total amount
+        st.write(f"Total Quantity: {total_quantity}")
+        st.write(f"Total Amount: ${total_amount:.2f}")
 
-        # Payment method selection
-        payment_method = st.selectbox("Select Payment Method:", ["Cash", "Card"])
-        received_amount = 0.0
-
-        if payment_method == "Cash":
-            received_amount = st.number_input("Enter the amount received from customer (in PKR):", min_value=0.0)
-        else:
-            bank_account = st.text_input("Enter your 13-digit Bank Account Number:", max_chars=13)
-            pin_code = st.text_input("Enter your PIN Code:", type="password")
-
-        change = received_amount - total_amount if payment_method == "Cash" else 0
-
+        # Receipt button
         if st.button("Print Receipt"):
-            if payment_method == "Cash" and received_amount < total_amount:
-                st.error("Amount received is less than the total amount.")
-            else:
-                print_receipt(st.session_state.items, total_quantity, total_amount, received_amount, change, payment_method, bank_account)
+            print_receipt(st.session_state.items, total_quantity, total_amount)
+
+# Function to print receipt
+def print_receipt(items, total_quantity, total_amount):
+    st.subheader("Receipt")
+    st.write("Aimy's Store")
+    st.write("Cash Receipt")
+    for item in items:
+        st.write(f"{item['name']} - Quantity: {item['quantity']} - Total Price: ${item['total_price']:.2f}")
+    st.write(f"Total Quantity: {total_quantity}")
+    st.write(f"Total Amount: ${total_amount:.2f}")
 
 # Call the billing function
 supermarket_billing()
